@@ -2,6 +2,7 @@
 from configparser import ConfigParser
 from ratingsparser import RatingsParser
 from plexapi.server import PlexServer
+from retry import retry
 
 config = ConfigParser()
 config.read('config.ini')
@@ -24,6 +25,7 @@ def print_indent(indent_level, *args):
 	indent = ' ' * (indent_level * 4 - 1)
 	print(indent, *args)
 
+@retry(tries=5)
 def match_track(library, track):
 	albums = music.searchAlbums(title=track['album'])
 	if len(albums) == 0:
@@ -56,6 +58,11 @@ def match_track(library, track):
 				return candidate
 
 
+@retry(tries=5)
+def update_rating(track, rating):
+	track.edit(**{'userRating.value': rating})
+
+
 for track in tracks_to_rate:
 	print(track)
 
@@ -69,5 +76,5 @@ for track in tracks_to_rate:
 		if rating_before == rating_after:
 			print('Ratings match, skipping')
 		else:
-			track_match.edit(**{'userRating.value': rating_after})
+			update_rating(track_match, rating_after)
 			print('Track rating updated from', rating_before, 'to', rating_after)
