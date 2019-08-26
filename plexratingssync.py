@@ -18,23 +18,21 @@ ratings = DoubleColonRatingsParser('ratings.txt')
 tracks_to_rate = ratings.tracks()
 print('Parsed', len(tracks_to_rate), 'tracks with ratings')
 
-# foobar2000 ratings are out of 5, Plex ratings are out of 10, so multiply by 2 to get from fb2k to Plex ratings
-tracks_to_rate = [{**track, 'rating': track['rating'] * 2} for track in tracks_to_rate]
 
 def print_indent(indent_level, *args):
 	indent = ' ' * (indent_level * 4 - 1)
 	print(indent, *args)
 
+
 @retry(tries=5)
 def match_track(library, track):
-	albums = music.searchAlbums(title=track['album'])
+	albums = music.searchAlbums(title=track.album)
 	if len(albums) == 0:
-		print('No matches found for album:', track['album'])
+		print('No matches found for album:', track.album)
 	for album in albums:
 		print('Album:', album.title)
 		for candidate in album.tracks():
 			print_indent(1, candidate.title, candidate.originalTitle, candidate.parentIndex, candidate.index)
-			# print_indent(1, track['title'], track['artist'], track['discNumber'], track['trackNumber'])
 
 			parentIndex = candidate.parentIndex
 			if parentIndex != None:
@@ -44,10 +42,10 @@ def match_track(library, track):
 			if index != None:
 				index = int(index)
 
-			match_title = candidate.title == track['title']
-			match_artist = candidate.originalTitle == track['artist']
-			match_disc_number = parentIndex == track['discNumber']
-			match_track_number = index == track['trackNumber']
+			match_title = candidate.title == track.title
+			match_artist = candidate.originalTitle == track.artist
+			match_disc_number = parentIndex == track.disc_number
+			match_track_number = index == track.track_number
 
 			match_title and print_indent(2, 'Track matches title')
 			match_artist and print_indent(2, 'Track matches artist')
@@ -71,7 +69,7 @@ for track in tracks_to_rate:
 	if track_match:
 		print('Track matched, updating rating')
 		rating_before = track_match.userRating
-		rating_after = track['rating']
+		rating_after = track.rating
 
 		if rating_before == rating_after:
 			print('Ratings match, skipping')

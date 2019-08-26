@@ -1,4 +1,7 @@
+from typing import List
+
 from ratingsparser import RatingsParser
+from track import Track
 
 class DoubleColonRatingsParser(RatingsParser):
 	"""
@@ -11,7 +14,7 @@ class DoubleColonRatingsParser(RatingsParser):
 	def filename(self):
 		return self._filename
 
-	def tracks(self):
+	def tracks(self) -> List[Track]:
 		ratings_file = open(self._filename, mode='r', encoding='utf-8')
 		tracks_to_rate = []
 
@@ -25,6 +28,9 @@ class DoubleColonRatingsParser(RatingsParser):
 
 			if rating == '':
 				continue
+			else:
+				# foobar2000 ratings are out of 5 while Plex ratings are out of 10, so multiply by 2 to get from fb2k to Plex ratings
+				rating = float(rating) * 2
 
 			if track_number == '':
 				track_number = None
@@ -36,14 +42,14 @@ class DoubleColonRatingsParser(RatingsParser):
 			else:
 				disc_number = int(disc_number)
 
-			track = {
-				'title': title,
-				'artist': artist,
-				'album': album,
-				'trackNumber': track_number,
-				'discNumber': disc_number,
-				'rating': float(rating)
-			}
+			track = Track(
+				title=title,
+				artist=artist,
+				album=album,
+				track_number=track_number,
+				disc_number=disc_number,
+				rating=rating
+			)
 
 			tracks_to_rate.append(track)
 
