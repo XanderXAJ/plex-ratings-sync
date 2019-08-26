@@ -7,6 +7,7 @@ from retry import retry
 
 from cliparser import CliParser
 from doublecolonratingsparser import DoubleColonRatingsParser
+from googleplayjsonratingsparser import GooglePlayJsonRatingsParser
 from ratingsparser import RatingsParser
 
 
@@ -19,6 +20,8 @@ def read_config(filename):
 def select_ratings_parser(type: str, filename: str) -> RatingsParser:
 	if type == 'double_colon':
 		return DoubleColonRatingsParser(filename)
+	if type == 'google_play_json':
+		return GooglePlayJsonRatingsParser(filename)
 
 
 def print_indent(indent_level, *args):

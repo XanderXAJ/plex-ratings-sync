@@ -6,7 +6,7 @@ class CliParser:
 		super().__init__()
 
 		parser.add_argument('--config_file', default='config.ini')
-		parser.add_argument('--input_format', choices=['double_colon'], required=True)
+		parser.add_argument('--input_format', choices=['double_colon', 'google_play_json'], required=True)
 		parser.add_argument('input_file')
 
 		self._parser = parser
