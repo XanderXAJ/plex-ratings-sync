@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from configparser import ConfigParser
-from ratingsparser import RatingsParser
+from doublecolonratingsparser import DoubleColonRatingsParser
 from plexapi.server import PlexServer
 from retry import retry
 
@@ -14,7 +14,7 @@ for track in music.searchTracks(title='Reach for the Summit'):
 	track.edit(**{'userRating.value': 8.0})
 	print(track.userRating)
 
-ratings = RatingsParser('ratings.txt')
+ratings = DoubleColonRatingsParser('ratings.txt')
 tracks_to_rate = ratings.tracks()
 print('Parsed', len(tracks_to_rate), 'tracks with ratings')
 
