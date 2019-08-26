@@ -24,11 +24,11 @@ class CliParserArgs(unittest.TestCase):
 
 	def test_default_config_file(self):
 		actual = self.parser.parse(*self.base_args)
-		self.assertEqual(actual.config_file, 'config.ini')
+		self.assertEqual('config.ini', actual.config_file)
 
 	def test_valid_ratings_input_format_parses(self):
 		actual = self.parser.parse('--input_format', 'double_colon', 'file')
-		self.assertEqual(actual.input_format, 'double_colon')
+		self.assertEqual('double_colon', actual.input_format)
 
 	def test_invalid_ratings_input_format_raises_error(self):
 		with self.assertRaises(TestArgumentParserError):
