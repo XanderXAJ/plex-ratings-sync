@@ -5,9 +5,9 @@ from configparser import ConfigParser
 from plexapi.server import PlexServer
 from retry import retry
 
-from ratingsparser import RatingsParser
 from cliparser import CliParser
 from doublecolonratingsparser import DoubleColonRatingsParser
+from ratingsparser import RatingsParser
 
 
 def read_config(filename):
@@ -63,29 +63,34 @@ def update_rating(track, rating):
 	track.edit(**{'userRating.value': rating})
 
 
-args = CliParser(ArgumentParser()).parse()
+def main():
+	args = CliParser(ArgumentParser()).parse()
 
-config = read_config(args.config_file)
+	config = read_config(args.config_file)
 
-plex = PlexServer(config['server']['baseurl'], config['server']['token'])
-music = plex.library.section('Music')
+	plex = PlexServer(config['server']['baseurl'], config['server']['token'])
+	music = plex.library.section('Music')
 
-ratings_parser = select_ratings_parser(args.input_format, args.input_file)
-tracks_to_rate = ratings_parser.tracks()
-print('Parsed', len(tracks_to_rate), 'tracks with ratings')
+	ratings_parser = select_ratings_parser(args.input_format, args.input_file)
+	tracks_to_rate = ratings_parser.tracks()
+	print('Parsed', len(tracks_to_rate), 'tracks with ratings')
 
-for track in tracks_to_rate:
-	print(track)
+	for track in tracks_to_rate:
+		print(track)
 
-	track_match = match_track(music, track)
+		track_match = match_track(music, track)
 
-	if track_match:
-		print('Track matched, updating rating')
-		rating_before = track_match.userRating
-		rating_after = track.rating
+		if track_match:
+			print('Track matched, updating rating')
+			rating_before = track_match.userRating
+			rating_after = track.rating
 
-		if rating_before == rating_after:
-			print('Ratings match, skipping')
-		else:
-			update_rating(track_match, rating_after)
-			print('Track rating updated from', rating_before, 'to', rating_after)
+			if rating_before == rating_after:
+				print('Ratings match, skipping')
+			else:
+				update_rating(track_match, rating_after)
+				print('Track rating updated from', rating_before, 'to', rating_after)
+
+
+if __name__ == '__main__':
+	main()
