@@ -36,17 +36,17 @@ def match_track(library, track):
 		for candidate in album.tracks():
 			print_indent(1, candidate.title, candidate.originalTitle, candidate.parentIndex, candidate.index)
 
-			parentIndex = candidate.parentIndex
-			if parentIndex != None:
-				parentIndex = int(parentIndex)
+			parent_index = candidate.parentIndex
+			if parent_index is not None:
+				parent_index = int(parent_index)
 
 			index = candidate.index
-			if index != None:
+			if index is not None:
 				index = int(index)
 
 			match_title = candidate.title == track.title
 			match_artist = candidate.originalTitle == track.artist
-			match_disc_number = parentIndex == track.disc_number
+			match_disc_number = parent_index == track.disc_number
 			match_track_number = index == track.track_number
 
 			match_title and print_indent(2, 'Track matches title')
