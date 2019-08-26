@@ -12,10 +12,6 @@ config.read('config.ini')
 plex = PlexServer(config['server']['baseurl'], config['server']['token'])
 music = plex.library.section('Music')
 
-for track in music.searchTracks(title='Reach for the Summit'):
-	track.edit(**{'userRating.value': 8.0})
-	print(track.userRating)
-
 ratings = DoubleColonRatingsParser('ratings.txt')
 tracks_to_rate = ratings.tracks()
 print('Parsed', len(tracks_to_rate), 'tracks with ratings')
