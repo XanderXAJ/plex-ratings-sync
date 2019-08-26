@@ -22,7 +22,7 @@ def print_indent(indent_level, *args):
 
 @retry(tries=5)
 def match_track(library, track):
-	albums = music.searchAlbums(title=track.album)
+	albums = library.searchAlbums(title=track.album)
 	if len(albums) == 0:
 		print('No matches found for album:', track.album)
 	for album in albums:
