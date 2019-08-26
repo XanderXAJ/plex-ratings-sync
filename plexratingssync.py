@@ -5,6 +5,7 @@ from configparser import ConfigParser
 from plexapi.server import PlexServer
 from retry import retry
 
+from ratingsparser import RatingsParser
 from cliparser import CliParser
 from doublecolonratingsparser import DoubleColonRatingsParser
 
@@ -13,6 +14,11 @@ def read_config(filename):
 	config = ConfigParser()
 	config.read(filename)
 	return config
+
+
+def select_ratings_parser(type: str, filename: str) -> RatingsParser:
+	if type == 'double_colon':
+		return DoubleColonRatingsParser(filename)
 
 
 def print_indent(indent_level, *args):
@@ -64,8 +70,8 @@ config = read_config(args.config_file)
 plex = PlexServer(config['server']['baseurl'], config['server']['token'])
 music = plex.library.section('Music')
 
-ratings = DoubleColonRatingsParser(args.input_file)
-tracks_to_rate = ratings.tracks()
+ratings_parser = select_ratings_parser(args.input_format, args.input_file)
+tracks_to_rate = ratings_parser.tracks()
 print('Parsed', len(tracks_to_rate), 'tracks with ratings')
 
 for track in tracks_to_rate:
