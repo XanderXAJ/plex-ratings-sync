@@ -1,20 +1,18 @@
 #!/usr/bin/env python
+from argparse import ArgumentParser
 from configparser import ConfigParser
 
 from plexapi.server import PlexServer
 from retry import retry
 
+from cliparser import CliParser
 from doublecolonratingsparser import DoubleColonRatingsParser
 
-config = ConfigParser()
-config.read('config.ini')
 
-plex = PlexServer(config['server']['baseurl'], config['server']['token'])
-music = plex.library.section('Music')
-
-ratings = DoubleColonRatingsParser('ratings.txt')
-tracks_to_rate = ratings.tracks()
-print('Parsed', len(tracks_to_rate), 'tracks with ratings')
+def read_config(filename):
+	config = ConfigParser()
+	config.read(filename)
+	return config
 
 
 def print_indent(indent_level, *args):
@@ -58,6 +56,17 @@ def match_track(library, track):
 def update_rating(track, rating):
 	track.edit(**{'userRating.value': rating})
 
+
+args = CliParser(ArgumentParser()).parse()
+
+config = read_config(args.config_file)
+
+plex = PlexServer(config['server']['baseurl'], config['server']['token'])
+music = plex.library.section('Music')
+
+ratings = DoubleColonRatingsParser(args.input_file)
+tracks_to_rate = ratings.tracks()
+print('Parsed', len(tracks_to_rate), 'tracks with ratings')
 
 for track in tracks_to_rate:
 	print(track)
