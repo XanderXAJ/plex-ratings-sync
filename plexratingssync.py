@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 from configparser import ConfigParser
-from doublecolonratingsparser import DoubleColonRatingsParser
+
 from plexapi.server import PlexServer
 from retry import retry
+
+from doublecolonratingsparser import DoubleColonRatingsParser
 
 config = ConfigParser()
 config.read('config.ini')

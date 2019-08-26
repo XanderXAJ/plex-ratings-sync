@@ -3,11 +3,13 @@ from typing import List
 from ratingsparser import RatingsParser
 from track import Track
 
+
 class DoubleColonRatingsParser(RatingsParser):
 	"""
 	Parses ratings files of the format:
 	title :: artist :: album :: track number :: disc number :: rating
 	"""
+
 	def __init__(self, filename):
 		self._filename = filename
 
@@ -38,7 +40,8 @@ class DoubleColonRatingsParser(RatingsParser):
 				track_number = int(track_number)
 
 			if disc_number == '':
-				disc_number = 1   # Tracks without a disc number are always numbered 1 in Plex
+				# Tracks without a disc number are always numbered 1 in Plex
+				disc_number = 1
 			else:
 				disc_number = int(disc_number)
 
