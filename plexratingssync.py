@@ -31,11 +31,12 @@ def print_indent(indent_level, *args):
 
 
 @retry(tries=5)
-def match_track(library, track):
-	albums = library.searchAlbums(title=track.album)
-	if len(albums) == 0:
+def match_track(albums, track):
+	found_album = track.album in albums
+	if not found_album:
 		print('No matches found for album:', track.album)
-	for album in albums:
+	else:
+		album = albums[track.album]
 		print('Album:', album.title)
 		for candidate in album.tracks():
 			print_indent(1, candidate.title, candidate.originalTitle, candidate.parentIndex, candidate.index)
@@ -74,7 +75,8 @@ def main():
 	config = read_config(args.config_file)
 
 	plex = PlexServer(config['server']['baseurl'], config['server']['token'])
-	music = plex.library.section('Music')
+	music_library = plex.library.section('Music')
+	albums = {album.title : album for album in music_library.albums()}
 
 	ratings_parser = select_ratings_parser(args.input_format, args.input_file)
 	tracks_to_rate = ratings_parser.tracks()
@@ -83,7 +85,7 @@ def main():
 	for track in tracks_to_rate:
 		print(track)
 
-		track_match = match_track(music, track)
+		track_match = match_track(albums, track)
 
 		if track_match:
 			print('Track matched, updating rating')
