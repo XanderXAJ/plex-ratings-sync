@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from argparse import ArgumentParser
 from configparser import ConfigParser
+import logging
 
 from plexapi.server import PlexServer
 from retry import retry
@@ -67,6 +68,7 @@ def update_rating(track, rating):
 
 
 def main():
+	logging.basicConfig()
 	args = CliParser(ArgumentParser()).parse()
 
 	config = read_config(args.config_file)
