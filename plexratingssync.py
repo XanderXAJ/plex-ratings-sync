@@ -30,6 +30,14 @@ def print_indent(indent_level, *args):
 	print(indent, *args)
 
 
+def reset_all_ratings(library):
+	all_tracks = library.searchTracks()
+	for track in all_tracks:
+			if track.userRating != 0.0:
+				print(track)
+				update_rating(track, 0.0)
+
+
 @retry(tries=5)
 def match_track(albums, track):
 	found_album = track.album in albums
@@ -76,6 +84,11 @@ def main():
 
 	plex = PlexServer(config['server']['baseurl'], config['server']['token'])
 	music_library = plex.library.section('Music')
+
+	if args.reset:
+		print('Resetting ratings for all tracks')
+		reset_all_ratings(music_library)
+
 	albums = {album.title : album for album in music_library.albums()}
 
 	ratings_parser = select_ratings_parser(args.input_format, args.input_file)

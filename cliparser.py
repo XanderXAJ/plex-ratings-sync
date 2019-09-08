@@ -7,6 +7,7 @@ class CliParser:
 
 		parser.add_argument('--config_file', default='config.ini')
 		parser.add_argument('--input_format', choices=['double_colon', 'google_play_json'], required=True)
+		parser.add_argument('--reset', action='store_true', default=False)
 		parser.add_argument('input_file')
 
 		self._parser = parser
