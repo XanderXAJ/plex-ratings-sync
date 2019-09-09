@@ -45,7 +45,7 @@ def match_track(albums, track):
 		album = albums[track.album]
 		print('Album:', album.title)
 		for candidate in album.tracks():
-			print_indent(1, candidate.title, candidate.originalTitle, candidate.parentIndex, candidate.index)
+			print_indent(1, str_plex_track(candidate))
 
 			parent_index = candidate.parentIndex
 			if parent_index is not None:
@@ -77,7 +77,14 @@ def update_rating(track, target_rating):
 		print('Ratings match, skipping:', track)
 	else:
 		update_rating_commit(track, target_rating)
-		print('Track rating updated from', current_rating, 'to', target_rating, ':', track)
+		print('Track rating updated from', current_rating,
+		      'to', track.userRating, ':', track)
+
+
+def str_plex_track(track):
+	fields = ['title', 'originalTitle', 'parentRatingKey', 'ratingKey', 'userRating']
+	obj = {field: getattr(track, field) for field in fields}
+	return str(obj)
 
 
 @retry(tries=5)
@@ -98,20 +105,23 @@ def main():
 		print('Resetting ratings for all tracks')
 		reset_all_ratings(music_library)
 
-	albums = {album.title : album for album in music_library.albums()}
+	if args.input_file is not None and args.input_format is not None:
+		albums = {album.title : album for album in music_library.albums()}
 
-	ratings_parser = select_ratings_parser(args.input_format, args.input_file)
-	tracks_to_rate = ratings_parser.tracks()
-	print('Parsed', len(tracks_to_rate), 'tracks with ratings')
+		ratings_parser = select_ratings_parser(args.input_format, args.input_file)
+		tracks_to_rate = ratings_parser.tracks()
+		print('Parsed', len(tracks_to_rate), 'tracks with ratings')
 
-	for track in tracks_to_rate:
-		print(track)
+		for track in tracks_to_rate:
+			print(track)
 
-		track_match = match_track(albums, track)
+			track_match = match_track(albums, track)
 
-		if track_match:
-			print('Track matched, updating rating')
-			update_rating(track_match, track.rating)
+			if track_match:
+				print('Track matched, updating rating:', str_plex_track(track_match))
+				update_rating(track_match, track.rating)
+			else:
+				print('No match for track:', track)
 
 
 if __name__ == '__main__':
