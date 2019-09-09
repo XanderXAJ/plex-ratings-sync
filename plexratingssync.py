@@ -33,9 +33,7 @@ def print_indent(indent_level, *args):
 def reset_all_ratings(library):
 	all_tracks = library.searchTracks()
 	for track in all_tracks:
-			if track.userRating != 0.0:
-				print(track)
-				update_rating(track, 0.0)
+		update_rating(track, 0.0)
 
 
 @retry(tries=5)
@@ -69,10 +67,21 @@ def match_track(albums, track):
 
 			if match_title and match_artist and match_disc_number and match_track_number:
 				return candidate
+		return None
+
+
+def update_rating(track, target_rating):
+	current_rating = track.userRating
+
+	if current_rating == target_rating:
+		print('Ratings match, skipping:', track)
+	else:
+		update_rating_commit(track, target_rating)
+		print('Track rating updated from', current_rating, 'to', target_rating, ':', track)
 
 
 @retry(tries=5)
-def update_rating(track, rating):
+def update_rating_commit(track, rating):
 	track.edit(**{'userRating.value': rating})
 
 
@@ -102,14 +111,7 @@ def main():
 
 		if track_match:
 			print('Track matched, updating rating')
-			rating_before = track_match.userRating
-			rating_after = track.rating
-
-			if rating_before == rating_after:
-				print('Ratings match, skipping')
-			else:
-				update_rating(track_match, rating_after)
-				print('Track rating updated from', rating_before, 'to', rating_after)
+			update_rating(track_match, track.rating)
 
 
 if __name__ == '__main__':
